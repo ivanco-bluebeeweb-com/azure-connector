@@ -17,29 +17,24 @@ from app import ext, chat
 from schemas import (
     NoParams,
     ConnectAzureParams, ProviderConnection, ProviderConnectionList,
-    DisconnectAzureParams, ConnectionIdParams,
+    DisconnectAzureParams, DeleteResult, ConnectionIdParams,
     GetCloudOverviewParams, CloudOverview,
     ListVirtualMachinesParams, VirtualMachine, VirtualMachineList,
-    VmResourceParams, StopVmParams,
+    VmResourceParams, StopVmParams, VmActionResult,
     ListStorageAccountsParams, StorageAccount, StorageAccountList,
     StorageAccountResourceParams, BlobContainer, BlobContainerList,
     ListSqlServersParams, SqlServer, SqlServerList,
     ListSqlDatabasesParams, SqlDatabase, SqlDatabaseList,
     ListFunctionAppsParams, FunctionApp, FunctionAppList,
-    FunctionAppResourceParams,
+    FunctionAppResourceParams, FunctionAppActionResult,
     ListRoleAssignmentsParams, RoleAssignment, RoleAssignmentList,
     ListMetricAlertsParams, MetricAlert, MetricAlertList,
-    GetResourceMetricsParams,
+    GetResourceMetricsParams, ResourceMetricsResult,
     QueryCostsParams, CostQueryResult,
     GetCostForecastParams, CostForecastResult,
 )
 
 _SECRET_NAME = "azure_connections"
-
-
-class DeleteResult(dict):
-    """Lightweight marker so disconnect_azure has a data_model shape;
-    ActionResult.success accepts any JSON-serialisable payload."""
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -162,6 +157,7 @@ async def connect_azure(ctx, params: ConnectAzureParams) -> ActionResult:
     "in Entra ID.",
     action_type="write",
     chain_callable=True,
+    data_model=DeleteResult,
     event="azure-connector.disconnect_azure",
     effects=["azure.provider.disconnected"],
 )
@@ -173,7 +169,7 @@ async def disconnect_azure(ctx, params: DisconnectAzureParams) -> ActionResult:
         return ActionResult.error("Connection not found.", code="AZURE_CONN_NOT_FOUND")
     await _save_connections(ctx, remaining)
     return ActionResult.success(
-        {"deleted": True, "id": params.connection_id},
+        DeleteResult(deleted=True, id=params.connection_id),
         summary="Azure subscription disconnected.",
         refresh_panels=["azure_connect", "azure_settings"],
     )
@@ -270,6 +266,7 @@ async def get_virtual_machine(ctx, params: VmResourceParams) -> ActionResult:
     "Start a stopped/deallocated Virtual Machine.",
     action_type="write",
     chain_callable=True,
+    data_model=VmActionResult,
     event="azure-connector.start_vm",
     effects=["azure.vm.started"],
 )
@@ -283,7 +280,7 @@ async def start_virtual_machine(ctx, params: VmResourceParams) -> ActionResult:
     except az.ProviderError as e:
         return _err("Couldn't start that virtual machine", e)
     return ActionResult.success(
-        {"vm_name": params.vm_name, "action": "start"},
+        VmActionResult(vm_name=params.vm_name, action="start"),
         summary=f"Starting virtual machine {params.vm_name}.",
     )
 
@@ -293,6 +290,7 @@ async def start_virtual_machine(ctx, params: VmResourceParams) -> ActionResult:
     "Stop (or fully deallocate) a running Virtual Machine.",
     action_type="write",
     chain_callable=True,
+    data_model=VmActionResult,
     event="azure-connector.stop_vm",
     effects=["azure.vm.stopped"],
 )
@@ -316,6 +314,7 @@ async def stop_virtual_machine(ctx, params: StopVmParams) -> ActionResult:
     "Restart a Virtual Machine.",
     action_type="write",
     chain_callable=True,
+    data_model=VmActionResult,
     event="azure-connector.restart_vm",
     effects=["azure.vm.restarted"],
 )
@@ -329,7 +328,7 @@ async def restart_virtual_machine(ctx, params: VmResourceParams) -> ActionResult
     except az.ProviderError as e:
         return _err("Couldn't restart that virtual machine", e)
     return ActionResult.success(
-        {"vm_name": params.vm_name, "action": "restart"},
+        VmActionResult(vm_name=params.vm_name, action="restart"),
         summary=f"Restarting virtual machine {params.vm_name}.",
     )
 
@@ -515,6 +514,7 @@ async def list_function_apps(ctx, params: ListFunctionAppsParams) -> ActionResul
     "Restart a Function App.",
     action_type="write",
     chain_callable=True,
+    data_model=FunctionAppActionResult,
     event="azure-connector.restart_function_app",
     effects=["azure.function_app.restarted"],
 )
@@ -528,7 +528,7 @@ async def restart_function_app(ctx, params: FunctionAppResourceParams) -> Action
     except az.ProviderError as e:
         return _err("Couldn't restart that function app", e)
     return ActionResult.success(
-        {"app_name": params.app_name, "action": "restart"},
+        FunctionAppActionResult(app_name=params.app_name, action="restart"),
         summary=f"Restarting function app {params.app_name}.",
     )
 
@@ -603,6 +603,7 @@ async def list_metric_alerts(ctx, params: ListMetricAlertsParams) -> ActionResul
     "Read Azure Monitor metric datapoints for one resource over a time window.",
     action_type="read",
     chain_callable=True,
+    data_model=ResourceMetricsResult,
 )
 async def get_resource_metrics(ctx, params: GetResourceMetricsParams) -> ActionResult:
     """Read Azure Monitor metric datapoints for one resource over a time window."""
@@ -616,7 +617,7 @@ async def get_resource_metrics(ctx, params: GetResourceMetricsParams) -> ActionR
         )
     except az.ProviderError as e:
         return _err("Couldn't read resource metrics", e)
-    return ActionResult.success(body)
+    return ActionResult.success(ResourceMetricsResult(resource_id=params.resource_id, values=body.get("value", []) if isinstance(body, dict) else []))
 
 
 # ──────────────────────────────────────────────────────────────────────────

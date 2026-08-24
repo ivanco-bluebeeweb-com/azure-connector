@@ -44,6 +44,11 @@ class DisconnectAzureParams(BaseModel):
     connection_id: str = Field(..., description="The connection id to disconnect, from list_connections.")
 
 
+class DeleteResult(sdl.Entity):
+    deleted: bool = False
+    id: str = ""
+
+
 class ConnectionIdParams(BaseModel):
     connection_id: str = Field("", description="Which connected Azure subscription to use; omit to use the only/most recent one.")
 
@@ -98,6 +103,11 @@ class VmResourceParams(ConnectionIdParams):
 
 class StopVmParams(VmResourceParams):
     deallocate: bool = Field(True, description="True = fully deallocate (stop billing for compute); False = just power off.")
+
+
+class VmActionResult(sdl.Entity):
+    vm_name: str = ""
+    action: str = ""
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -200,6 +210,11 @@ class FunctionAppResourceParams(ConnectionIdParams):
     app_name: str = Field(..., description="The function app's name.")
 
 
+class FunctionAppActionResult(sdl.Entity):
+    app_name: str = ""
+    action: str = ""
+
+
 # ──────────────────────────────────────────────────────────────────────────
 # Role assignments (IAM equivalent, read-only)
 # ──────────────────────────────────────────────────────────────────────────
@@ -246,6 +261,11 @@ class GetResourceMetricsParams(ConnectionIdParams):
     metric_names: str = Field(..., description="Comma-separated metric names, e.g. 'Percentage CPU'.")
     timespan: str = Field(..., description="ISO 8601 interval, e.g. 2026-08-01T00:00:00Z/2026-08-24T00:00:00Z.")
     interval: str = Field("PT1H", description="ISO 8601 duration for datapoint granularity, e.g. PT1H (hourly).")
+
+
+class ResourceMetricsResult(sdl.Entity):
+    resource_id: str = ""
+    values: list[dict] = []
 
 
 # ──────────────────────────────────────────────────────────────────────────
