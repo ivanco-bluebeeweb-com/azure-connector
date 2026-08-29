@@ -1,0 +1,23 @@
+{
+  "connect_azure": 0,
+  "disconnect_azure": 0,
+  "list_connections": 0,
+  "list_virtual_machines": 8,
+  "get_virtual_machine": 8,
+  "list_storage_accounts": 8,
+  "get_storage_account": 8,
+  "list_blob_containers": 8,
+  "list_sql_servers": 8,
+  "list_sql_databases": 8,
+  "list_function_apps": 8,
+  "list_role_assignments": 8,
+  "list_metric_alerts": 8,
+  "get_resource_metrics": 8,
+  "query_costs": 8,
+  "get_cost_forecast": 8,
+  "start_virtual_machine": 16,
+  "stop_virtual_machine": 16,
+  "restart_virtual_machine": 16,
+  "restart_function_app": 16,
+  "get_cloud_overview": 40
+}
