@@ -192,7 +192,7 @@ async def list_connections(ctx, params: NoParams) -> ActionResult:
         )
         for c in connections
     ]
-    return ActionResult.success(ProviderConnectionList(connections=items))
+    return ActionResult.success(ProviderConnectionList(connections=items), summary="Connections listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -239,7 +239,7 @@ async def list_virtual_machines(ctx, params: ListVirtualMachinesParams) -> Actio
     items = [_vm_from_arm(v) for v in body.get("value", [])]
     if params.power_state_filter:
         items = [v for v in items if v.power_state.lower() == params.power_state_filter.lower()]
-    return ActionResult.success(VirtualMachineList(machines=items))
+    return ActionResult.success(VirtualMachineList(machines=items), summary="Virtual machines listed.")
 
 
 @chat.function(
@@ -258,7 +258,7 @@ async def get_virtual_machine(ctx, params: VmResourceParams) -> ActionResult:
         body = await az.get_virtual_machine(ctx, _creds(conn), params.resource_group, params.vm_name)
     except az.ProviderError as e:
         return _err("Couldn't read that virtual machine", e)
-    return ActionResult.success(_vm_from_arm(body))
+    return ActionResult.success(_vm_from_arm(body), summary="Virtual machine retrieved.")
 
 
 @chat.function(
@@ -366,7 +366,7 @@ async def list_storage_accounts(ctx, params: ListStorageAccountsParams) -> Actio
         body = await az.list_storage_accounts(ctx, _creds(conn))
     except az.ProviderError as e:
         return _err("Couldn't list storage accounts", e)
-    return ActionResult.success(StorageAccountList(accounts=[_storage_from_arm(a) for a in body.get("value", [])]))
+    return ActionResult.success(StorageAccountList(accounts=[_storage_from_arm(a) for a in body.get("value", [])]), summary="Storage accounts listed.")
 
 
 @chat.function(
@@ -385,7 +385,7 @@ async def get_storage_account(ctx, params: StorageAccountResourceParams) -> Acti
         body = await az.get_storage_account(ctx, _creds(conn), params.resource_group, params.account_name)
     except az.ProviderError as e:
         return _err("Couldn't read that storage account", e)
-    return ActionResult.success(_storage_from_arm(body))
+    return ActionResult.success(_storage_from_arm(body), summary="Storage account retrieved.")
 
 
 @chat.function(
@@ -408,7 +408,7 @@ async def list_blob_containers(ctx, params: StorageAccountResourceParams) -> Act
         BlobContainer(name=c.get("name", ""), public_access=(c.get("properties", {}) or {}).get("publicAccess", ""))
         for c in body.get("value", [])
     ]
-    return ActionResult.success(BlobContainerList(containers=items))
+    return ActionResult.success(BlobContainerList(containers=items), summary="Blob containers listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -442,7 +442,7 @@ async def list_sql_servers(ctx, params: ListSqlServersParams) -> ActionResult:
             id=s.get("id", ""), name=s.get("name", ""), resource_group=rg,
             location=s.get("location", ""), version=(s.get("properties", {}) or {}).get("version", ""),
         ))
-    return ActionResult.success(SqlServerList(servers=items))
+    return ActionResult.success(SqlServerList(servers=items), summary="Sql servers listed.")
 
 
 @chat.function(
@@ -469,7 +469,7 @@ async def list_sql_databases(ctx, params: ListSqlDatabasesParams) -> ActionResul
         )
         for d in body.get("value", [])
     ]
-    return ActionResult.success(SqlDatabaseList(databases=items))
+    return ActionResult.success(SqlDatabaseList(databases=items), summary="Sql databases listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -506,7 +506,7 @@ async def list_function_apps(ctx, params: ListFunctionAppsParams) -> ActionResul
         body = await az.list_function_apps(ctx, _creds(conn))
     except az.ProviderError as e:
         return _err("Couldn't list function apps", e)
-    return ActionResult.success(FunctionAppList(apps=[_func_from_arm(a) for a in body.get("value", [])]))
+    return ActionResult.success(FunctionAppList(apps=[_func_from_arm(a) for a in body.get("value", [])]), summary="Function apps listed.")
 
 
 @chat.function(
@@ -562,7 +562,7 @@ async def list_role_assignments(ctx, params: ListRoleAssignmentsParams) -> Actio
         )
         for r in body.get("value", [])
     ]
-    return ActionResult.success(RoleAssignmentList(assignments=items))
+    return ActionResult.success(RoleAssignmentList(assignments=items), summary="Role assignments listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -595,7 +595,7 @@ async def list_metric_alerts(ctx, params: ListMetricAlertsParams) -> ActionResul
         )
         for a in body.get("value", [])
     ]
-    return ActionResult.success(MetricAlertList(alerts=items))
+    return ActionResult.success(MetricAlertList(alerts=items), summary="Metric alerts listed.")
 
 
 @chat.function(
@@ -617,7 +617,7 @@ async def get_resource_metrics(ctx, params: GetResourceMetricsParams) -> ActionR
         )
     except az.ProviderError as e:
         return _err("Couldn't read resource metrics", e)
-    return ActionResult.success(ResourceMetricsResult(resource_id=params.resource_id, values=body.get("value", []) if isinstance(body, dict) else []))
+    return ActionResult.success(ResourceMetricsResult(resource_id=params.resource_id, values=body.get("value", []) if isinstance(body, dict) else []), summary="Resource metrics retrieved.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -663,7 +663,7 @@ async def query_costs(ctx, params: QueryCostsParams) -> ActionResult:
                 total += Decimal(str(r[cost_idx] or 0))
     return ActionResult.success(CostQueryResult(
         total_cost=str(total.quantize(Decimal("0.01"))), currency=currency, rows=rows,
-    ))
+    ), summary="Query costs done.")
 
 
 @chat.function(
@@ -700,7 +700,7 @@ async def get_cost_forecast(ctx, params: GetCostForecastParams) -> ActionResult:
                 break
     return ActionResult.success(CostForecastResult(
         forecast_cost=str(total.quantize(Decimal("0.01"))), currency=currency,
-    ))
+    ), summary="Cost forecast retrieved.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -786,4 +786,4 @@ async def get_cloud_overview(ctx, params: GetCloudOverviewParams) -> ActionResul
         vm_running=vm_running, vm_stopped=vm_stopped, storage_account_count=storage_count,
         sql_database_count=sql_count, function_app_error_count=func_error_count,
         month_to_date_cost=str(month_cost.quantize(Decimal("0.01"))), currency=currency,
-    ))
+    ), summary="Cloud overview retrieved.")
