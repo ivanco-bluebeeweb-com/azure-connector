@@ -37,6 +37,8 @@ class ProviderConnection(sdl.Entity):
 
 
 class ProviderConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[ProviderConnection] = []
 
 
@@ -45,6 +47,7 @@ class DisconnectAzureParams(BaseModel):
 
 
 class DeleteResult(sdl.Entity):
+    title: str = ""
     deleted: bool = False
     id: str = ""
 
@@ -59,6 +62,8 @@ class ConnectionIdParams(BaseModel):
 
 
 class CloudOverview(sdl.Entity):
+    id: str = ""
+    title: str = ""
     vm_running: int = 0
     vm_stopped: int = 0
     storage_account_count: int = 0
@@ -79,6 +84,7 @@ class GetCloudOverviewParams(ConnectionIdParams):
 
 
 class VirtualMachine(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     resource_group: str = ""
@@ -89,6 +95,8 @@ class VirtualMachine(sdl.Entity):
 
 
 class VirtualMachineList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     machines: list[VirtualMachine] = []
 
 
@@ -106,6 +114,8 @@ class StopVmParams(VmResourceParams):
 
 
 class VmActionResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     vm_name: str = ""
     action: str = ""
 
@@ -116,6 +126,7 @@ class VmActionResult(sdl.Entity):
 
 
 class StorageAccount(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     resource_group: str = ""
@@ -125,6 +136,8 @@ class StorageAccount(sdl.Entity):
 
 
 class StorageAccountList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     accounts: list[StorageAccount] = []
 
 
@@ -138,11 +151,15 @@ class StorageAccountResourceParams(ConnectionIdParams):
 
 
 class BlobContainer(sdl.Entity):
+    id: str = ""
+    title: str = ""
     name: str = ""
     public_access: str = ""
 
 
 class BlobContainerList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     containers: list[BlobContainer] = []
 
 
@@ -152,6 +169,7 @@ class BlobContainerList(sdl.Entity):
 
 
 class SqlServer(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     resource_group: str = ""
@@ -160,6 +178,8 @@ class SqlServer(sdl.Entity):
 
 
 class SqlServerList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     servers: list[SqlServer] = []
 
 
@@ -168,6 +188,7 @@ class ListSqlServersParams(ConnectionIdParams):
 
 
 class SqlDatabase(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     status: str = ""
@@ -175,6 +196,8 @@ class SqlDatabase(sdl.Entity):
 
 
 class SqlDatabaseList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     databases: list[SqlDatabase] = []
 
 
@@ -189,6 +212,7 @@ class ListSqlDatabasesParams(ConnectionIdParams):
 
 
 class FunctionApp(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     resource_group: str = ""
@@ -198,6 +222,8 @@ class FunctionApp(sdl.Entity):
 
 
 class FunctionAppList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     apps: list[FunctionApp] = []
 
 
@@ -211,6 +237,8 @@ class FunctionAppResourceParams(ConnectionIdParams):
 
 
 class FunctionAppActionResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     app_name: str = ""
     action: str = ""
 
@@ -221,6 +249,7 @@ class FunctionAppActionResult(sdl.Entity):
 
 
 class RoleAssignment(sdl.Entity):
+    title: str = ""
     id: str = ""
     principal_id: str = ""
     role_definition_id: str = ""
@@ -228,6 +257,8 @@ class RoleAssignment(sdl.Entity):
 
 
 class RoleAssignmentList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     assignments: list[RoleAssignment] = []
 
 
@@ -241,6 +272,7 @@ class ListRoleAssignmentsParams(ConnectionIdParams):
 
 
 class MetricAlert(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     severity: int = 0
@@ -249,6 +281,8 @@ class MetricAlert(sdl.Entity):
 
 
 class MetricAlertList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     alerts: list[MetricAlert] = []
 
 
@@ -264,6 +298,8 @@ class GetResourceMetricsParams(ConnectionIdParams):
 
 
 class ResourceMetricsResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     resource_id: str = ""
     values: list[dict] = []
 
@@ -274,6 +310,8 @@ class ResourceMetricsResult(sdl.Entity):
 
 
 class CostQueryResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     total_cost: str = ""
     currency: str = ""
     rows: list[dict] = []
@@ -287,6 +325,8 @@ class QueryCostsParams(ConnectionIdParams):
 
 
 class CostForecastResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     forecast_cost: str = ""
     currency: str = ""
 
