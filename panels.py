@@ -37,8 +37,7 @@ def _settings_button() -> ui.UINode:
     """The one required secondary entry point into the settings screen --
     always the last element at the bottom of the sidebar."""
     return ui.Button(
-        "App settings", variant="secondary", size="sm", full_width=True,
-        icon="settings", on_click=ui.Call("__panel__azure_settings"),
+        "App settings", variant="secondary", size="sm", icon="settings", on_click=ui.Call("__panel__azure_settings"),
     )
 
 
@@ -125,8 +124,7 @@ async def azure_connect_panel(ctx, **kwargs) -> object:
         ui.Text("Connected subscriptions", variant="subtitle"),
         _connections_section(connections),
         ui.Divider(),
-        ui.Button("Open cloud overview", variant="primary", size="sm", full_width=True,
-                  icon="Cloud", on_click=ui.Call("__panel__azure_center")),
+        ui.Button("Open cloud overview", variant="primary", size="sm", icon="Cloud", on_click=ui.Call("__panel__azure_center")),
         ui.Divider(),
         _connect_section(),
         ui.Divider(),
